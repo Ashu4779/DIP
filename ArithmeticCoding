@@ -1,0 +1,70 @@
+def arithmetic_encode(symbols, frequencies, message):
+    # Calculate cumulative frequency for each symbol
+    cumulative_frequencies = {}
+    total = sum(frequencies.values())
+    cumulative_sum = 0.0
+    for symbol in symbols:
+        cumulative_frequencies[symbol] = cumulative_sum
+        cumulative_sum += frequencies[symbol] / total
+
+    # Set initial range [low, high)
+    low = 0.0
+    high = 1.0
+
+    # Refine range based on each symbol in the message
+    for symbol in message:
+        symbol_low = cumulative_frequencies[symbol]
+        symbol_high = symbol_low + (frequencies[symbol] / total)
+        range_width = high - low
+        high = low + range_width * symbol_high
+        low = low + range_width * symbol_low
+
+    return (low + high) / 2  # Encoded message is a number within the final range
+
+
+def arithmetic_decode(symbols, frequencies, encoded_value, message_length):
+    # Calculate cumulative frequency for each symbol
+    cumulative_frequencies = {}
+    total = sum(frequencies.values())
+    cumulative_sum = 0.0
+    for symbol in symbols:
+        cumulative_frequencies[symbol] = cumulative_sum
+        cumulative_sum += frequencies[symbol] / total
+
+    # Set initial range [low, high)
+    low = 0.0
+    high = 1.0
+
+    decoded_message = []
+    for _ in range(message_length):
+        range_width = high - low
+        value = (encoded_value - low) / range_width
+
+        # Find the symbol corresponding to the value
+        for symbol in symbols:
+            symbol_low = cumulative_frequencies[symbol]
+            symbol_high = symbol_low + (frequencies[symbol] / total)
+            if symbol_low <= value < symbol_high:
+                decoded_message.append(symbol)
+                high = low + range_width * symbol_high
+                low = low + range_width * symbol_low
+                break
+
+    return "".join(decoded_message)
+
+
+# Example usage
+if __name__ == "__main__":
+    message = "arithmetic"
+    symbols = sorted(set(message))
+    frequencies = {symbol: message.count(symbol) for symbol in symbols}
+
+    # Encode the message
+    encoded_value = arithmetic_encode(symbols, frequencies, message)
+    print(f"Encoded Value: {encoded_value}")
+
+    # Decode the message
+    decoded_message = arithmetic_decode(
+        symbols, frequencies, encoded_value, len(message)
+    )
+    print(f"Decoded Message: {decoded_message}")

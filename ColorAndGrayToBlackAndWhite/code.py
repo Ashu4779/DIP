@@ -1,0 +1,43 @@
+{
+    "nbformat": 4,
+    "nbformat_minor": 0,
+    "metadata": {
+        "colab": {"provenance": []},
+        "kernelspec": {"name": "python3", "display_name": "Python 3"},
+        "language_info": {"name": "python"},
+    },
+    "cells": [
+        {
+            "cell_type": "code",
+            "execution_count": null,
+            "metadata": {"id": "rtokS-MdPBzF"},
+            "outputs": [],
+            "source": [
+                "import cv2\n",
+                "from google.colab.patches import cv2_imshow\n",
+                "\n",
+                "# Load the color image\n",
+                "color_image = cv2.imread('/content/image1.jpeg')\n",
+                "\n",
+                "# Convert the color image to grayscale\n",
+                "gray_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)\n",
+                "\n",
+                "# Thresholding to convert grayscale image to black and white\n",
+                "_, bw_from_color = cv2.threshold(gray_image, 128, 255, cv2.THRESH_BINARY)\n",
+                "\n",
+                "# Load the grayscale image directly (if you have one)\n",
+                "gray_image_direct = cv2.imread('/content/gray.jpeg', cv2.IMREAD_GRAYSCALE)\n",
+                "\n",
+                "# Thresholding to convert directly loaded grayscale image to black and white\n",
+                "_, bw_from_gray = cv2.threshold(gray_image_direct, 128, 255, cv2.THRESH_BINARY)\n",
+                "\n",
+                "# Display the images\n",
+                "cv2_imshow(bw_from_color)\n",
+                "cv2_imshow(bw_from_gray)\n",
+                "\n",
+                "cv2.waitKey(0)\n",
+                "cv2.destroyAllWindows()\n",
+            ],
+        }
+    ],
+}
