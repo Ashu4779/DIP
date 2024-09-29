@@ -1,0 +1,32 @@
+import pywt
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate a sample signal (sinusoidal)
+t = np.linspace(0, 1, num=2048)
+signal = np.sin(50 * 2 * np.pi * t) + np.sin(120 * 2 * np.pi * t)
+
+# Perform 1D Discrete Wavelet Transform
+wavelet = "db4"  # Daubechies 4 wavelet
+coeffs = pywt.wavedec(signal, wavelet)
+
+# Extract approximation and detail coefficients
+approx = coeffs[0]  # Approximation coefficients (low frequencies)
+details = coeffs[1:]  # Detail coefficients (high frequencies)
+
+# Plot the original signal and approximation coefficients
+plt.figure(figsize=(12, 6))
+plt.subplot(2, 1, 1)
+plt.plot(t, signal, label="Original Signal")
+plt.title("Original Signal")
+plt.xlabel("Time")
+plt.ylabel("Amplitude")
+
+plt.subplot(2, 1, 2)
+plt.plot(approx, label="Approximation Coefficients (Low frequencies)", color="orange")
+plt.title("Wavelet Approximation (Low-pass)")
+plt.xlabel("Time")
+plt.ylabel("Amplitude")
+
+plt.tight_layout()
+plt.show()

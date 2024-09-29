@@ -1,0 +1,66 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def local_binary_pattern(img, P=8, R=1):
+    """
+    Compute Local Binary Pattern of an image.
+
+    Parameters:
+    img : Grayscale input image
+    P : Number of circularly symmetric neighbor set points (default=8)
+    R : Radius of circle (default=1)
+
+    Returns:
+    lbp : Local Binary Pattern image
+    """
+    # Get the dimensions of the input image
+    rows, cols = img.shape
+
+    # Initialize the LBP image with zeros
+    lbp = np.zeros((rows, cols), dtype=np.uint8)
+
+    # Iterate over each pixel of the image
+    for i in range(R, rows - R):
+        for j in range(R, cols - R):
+            # Get the center pixel value
+            center = img[i, j]
+
+            # Get the 8 surrounding pixels
+            binary_string = ""
+            for p in range(P):
+                # Get angle for circular pattern
+                angle = 2 * np.pi * p / P
+                y = i + R * np.sin(angle)
+                x = j + R * np.cos(angle)
+
+                # Bilinear interpolation for non-integer coordinates
+                neighbor_value = cv2.getRectSubPix(img, (1, 1), (x, y))[0, 0]
+
+                # Threshold the neighbor pixels
+                binary_string += "1" if neighbor_value >= center else "0"
+
+            # Convert the binary string to decimal
+            lbp[i, j] = int(binary_string, 2)
+
+    return lbp
+
+
+# Read image in grayscale
+image = cv2.imread("sample_image.jpg", cv2.IMREAD_GRAYSCALE)
+
+# Compute LBP
+lbp_image = local_binary_pattern(image)
+
+# Plot the original and LBP images
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(image, cmap="gray")
+plt.title("Original Image")
+
+plt.subplot(1, 2, 2)
+plt.imshow(lbp_image, cmap="gray")
+plt.title("Local Binary Pattern")
+
+plt.show()

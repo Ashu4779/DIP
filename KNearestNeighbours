@@ -1,0 +1,57 @@
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, classification_report
+import matplotlib.pyplot as plt
+
+# Step 1: Generate a synthetic dataset
+from sklearn.datasets import make_classification
+
+X, y = make_classification(
+    n_samples=1000,
+    n_features=2,
+    n_informative=2,
+    n_redundant=0,
+    n_clusters_per_class=1,
+    random_state=42,
+)
+
+# Step 2: Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Step 3: Initialize the KNN classifier with K=5
+knn = KNeighborsClassifier(n_neighbors=5)
+
+# Step 4: Train the model
+knn.fit(X_train, y_train)
+
+# Step 5: Make predictions on the test set
+y_pred = knn.predict(X_test)
+
+# Step 6: Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy * 100:.2f}%")
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+
+# Step 7: Plot decision boundaries
+def plot_decision_boundaries(X, y, model):
+    h = 0.02
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+
+    plt.contourf(xx, yy, Z, alpha=0.8)
+    plt.scatter(X[:, 0], X[:, 1], c=y, edgecolors="k", marker="o", s=20)
+    plt.xlim(xx.min(), xx.max())
+    plt.ylim(yy.min(), yy.max())
+    plt.title("KNN Decision Boundaries")
+    plt.show()
+
+
+# Visualize the decision boundaries for the test set
+plot_decision_boundaries(X_test, y_test, knn)
